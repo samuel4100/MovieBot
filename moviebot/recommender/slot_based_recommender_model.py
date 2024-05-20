@@ -5,10 +5,14 @@ from typing import Any, Dict, List
 from moviebot.database.db_movies import DataBase
 from moviebot.dialogue_manager.dialogue_state import DialogueState
 from moviebot.domain.movie_domain import MovieDomain
-from moviebot.recommender.recommender_model import RecommenderModel
+from dialoguekitrec.recommender.recommendation_engine import (
+    RecommendationEngine,
+)
 
 
-class SlotBasedRecommenderModel(RecommenderModel):
+class SlotBasedRecommenderModel(
+    RecommendationEngine
+):  # RecommendationRetriever):
     def __init__(self, db: DataBase, domain: MovieDomain) -> None:
         """Instantiates a slot-based recommender model.
 
@@ -16,10 +20,11 @@ class SlotBasedRecommenderModel(RecommenderModel):
             db: Database with available items.
             domain: Domain knowledge.
         """
-        super().__init__(db)
+        super().__init__()
+        self.item_db = db
         self._domain = domain
 
-    def recommend_items(
+    def retrieve_items(
         self, dialogue_state: DialogueState
     ) -> List[Dict[str, Any]]:
         """Recommends movies based on slot-value pairs.
@@ -30,5 +35,7 @@ class SlotBasedRecommenderModel(RecommenderModel):
         Returns:
             Recommended movies.
         """
-        database_result = self._db.database_lookup(dialogue_state, self._domain)
-        return database_result
+        self.stored_items = self.item_db.database_lookup(
+            dialogue_state, self._domain
+        )
+        return self.stored_items

@@ -12,7 +12,9 @@ from moviebot.dialogue_manager.dialogue_manager import DialogueManager
 from moviebot.domain.movie_domain import MovieDomain
 from moviebot.nlg.nlg import NLG
 from moviebot.nlu.rule_based_nlu import RuleBasedNLU as NLU
-from moviebot.recommender.recommender_model import RecommenderModel
+from dialoguekitrec.recommender.recommendation_engine import (
+    RecommendationEngine,
+)
 from moviebot.recommender.slot_based_recommender_model import (
     SlotBasedRecommenderModel,
 )
@@ -99,7 +101,7 @@ class MovieBotAgent(Agent):
             self.data_config, self.isBot, self.new_user
         )
 
-    def _get_recommender(self, recommender_type: str) -> RecommenderModel:
+    def _get_recommender(self, recommender_type: str) -> RecommendationEngine:
         """Creates a recommender model of given type.
 
         Recommender types supported: slot_based.

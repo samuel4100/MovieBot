@@ -422,6 +422,11 @@ class UserIntentsChecker:
         for slot in slot_filter_priority:
             params = [p for p in dact.params if p.slot == slot.value]
             for param in params:
+
+                # Small bug fix. Do change param.value.
+                if str(param.value) == "dont_care":
+                    param.value = "dont care"  # <enum 'Values'>-><class 'str'>
+
                 if any(
                     [
                         re.search(r"\b{0}\b".format(pattern), param.value)

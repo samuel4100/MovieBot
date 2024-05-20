@@ -12,9 +12,12 @@ from typing import Any, Dict, List
 
 from moviebot.dialogue_manager.dialogue_act import DialogueAct
 from moviebot.domain.movie_domain import MovieDomain
+from dialoguekitrec.dialogue_manager.dialogue_state import DialogueState
 
 
-class DialogueState:
+class DialogueState(DialogueState):
+    ...
+
     def __init__(
         self, domain: MovieDomain, slots: List[str], isBot: bool
     ) -> None:
@@ -25,6 +28,9 @@ class DialogueState:
             slots: The slots to find information needs.
             isBot: If the conversation is via bot or not.
         """
+        super().__init__(
+            domain, slots
+        )  # NEED TO ADD DIALOGUE ACTS AS PART OF CODE.
         self.isBot = isBot
         self.domain = domain
         # the recommended movie and all it's attributes from the database

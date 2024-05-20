@@ -12,9 +12,12 @@ from moviebot.domain.movie_domain import MovieDomain
 from moviebot.nlu.annotation.operator import Operator
 from moviebot.nlu.annotation.slots import Slots
 from moviebot.nlu.annotation.values import Values
+from dialoguekitrec.dialogue_manager.dialogue_state_tracker import (
+    DialogueStateTracker,
+)
 
 
-class DialogueStateTracker:
+class DialogueStateTracker(DialogueStateTracker):
     def __init__(self, config: Dict[str, Any], isBot: bool) -> None:
         """Loads the database and domain knowledge and creates an initial
         dialogue state.
@@ -44,7 +47,12 @@ class DialogueStateTracker:
         # re-filtering the dacts
         user_dacts_copy = deepcopy(user_dacts)
         user_dacts = []
+
+        # Fixed bug. See nlu/rule_based_nlu.py lines 255-257
         for copy_dact in user_dacts_copy:
+            if copy_dact.intent == "RESTART":
+                self.initialize()
+
             if copy_dact.intent not in [d.intent for d in user_dacts]:
                 user_dacts.append(copy_dact)
             else:
@@ -310,7 +318,6 @@ class DialogueStateTracker:
             backup_results: Previous results stored in the database. Defaults
               to None.
         """
-
         item_found = False
         self.dialogue_state.items_in_context = False
         if database_result:

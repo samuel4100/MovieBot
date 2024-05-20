@@ -252,10 +252,14 @@ class RuleBasedNLU(NLU):
             if (
                 isinstance(value, list) and value[0] == raw_utterance
             ) or value == raw_utterance:
-                if dact.intent == UserIntents.CONTINUE_RECOMMENDATION:
-                    dact.params = self.intents_checker.generate_params_continue_recommendation(  # noqa: E501
-                        item_in_focus
-                    )
+                if raw_utterance == "/restart":
+                    dact = UserIntents.RESTART  # Bug fix. See DST line 52
+                    dact.intent = "RESTART"
+                # elif dact.intent == UserIntents.CONTINUE_RECOMMENDATION:
+                # dact = UserIntents.CONTINUE_RECOMMENDATION
+                # dact.params = self.intents_checker.generate_params_continue_recommendation(  # noqa: E501
+                #    item_in_focus
+                # )
                 dacts.append(dact)
                 break
         return dacts

@@ -13,9 +13,10 @@ from moviebot.dialogue_manager.dialogue_state import DialogueState
 from moviebot.nlu.annotation.item_constraint import ItemConstraint
 from moviebot.nlu.annotation.operator import Operator
 from moviebot.nlu.annotation.slots import Slots
+from dialoguekitrec.dialogue_manager.dialogue_policy import DialoguePolicy
 
 
-class RuleBasedDialoguePolicy:
+class RuleBasedDialoguePolicy(DialoguePolicy):
     def __init__(self, isBot: bool, new_user: bool) -> None:
         """Loads all necessary parameters for the policy.
 
@@ -23,6 +24,7 @@ class RuleBasedDialoguePolicy:
             isBot: If the conversation is via bot or not.
             new_user: Whether the user is new or not.
         """
+        super().__init__()
         self.isBot = isBot
         self.new_user = new_user
 
@@ -325,7 +327,7 @@ class RuleBasedDialoguePolicy:
             return [DialogueAct(AgentIntents.CANT_HELP)]
         return []
 
-    def next_action(
+    def select_action(
         self,
         dialogue_state: DialogueState,
         restart: bool = False,
@@ -418,3 +420,9 @@ class RuleBasedDialoguePolicy:
                 return " or ".join(random.sample(_sub_example, 2))
             else:
                 return " or ".join(random.sample(examples, 2))
+
+    def load_dialogue_policy(self) -> None:
+        pass
+
+    def save_dialogue_policy(self) -> None:
+        pass

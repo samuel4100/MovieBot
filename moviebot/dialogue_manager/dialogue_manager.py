@@ -20,7 +20,9 @@ from moviebot.dialogue_manager.dialogue_state_tracker import (
 )
 from moviebot.nlu.annotation.item_constraint import ItemConstraint
 from moviebot.nlu.annotation.operator import Operator
-from moviebot.recommender.recommender_model import RecommenderModel
+from dialoguekitrec.recommender.recommendation_engine import (
+    RecommendationEngine,
+)
 
 
 class DialogueManager:
@@ -41,7 +43,7 @@ class DialogueManager:
         self.dialogue_policy = RuleBasedDialoguePolicy(
             self.isBot, self.new_user
         )
-        self.recommender: RecommenderModel = config.get("recommender")
+        self.recommender: RecommendationEngine = config.get("recommender")
 
     def start_dialogue(self, new_user: bool = False) -> List[DialogueAct]:
         """Starts the dialogue by generating a response from the agent.
@@ -93,21 +95,18 @@ class DialogueManager:
             dialogue_state.agent_can_lookup or dialogue_state.agent_req_filled
         ) and not dialogue_state.agent_made_offer:
             # accesses the database to fetch results if required
-            recommended_movies = self.recommender.recommend_items(
-                dialogue_state
-            )
+            recommended_movies = self.recommender.retrieve_items(dialogue_state)
             self.dialogue_state_tracker.update_state_db(
                 recommended_movies,
-                self.recommender.get_previous_recommend_items(),
+                self.recommender.get_previous_retrieved_items(),
             )
 
         # next action based on updated state
         dialogue_state = self.dialogue_state_tracker.get_state()
-        agent_dacts = self.dialogue_policy.next_action(
+        agent_dacts = self.dialogue_policy.select_action(
             dialogue_state, restart=restart
         )
         self.dialogue_state_tracker.update_state_agent(agent_dacts)
-
         return agent_dacts
 
     def get_state(self) -> DialogueState:
